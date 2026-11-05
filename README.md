@@ -7,8 +7,9 @@
 <p align="center"><strong>Hit a limit. Keep coding. It's swapped.</strong></p>
 
 <p align="center">
+  <a href="https://github.com/n-kasatkin/just-swap/releases/latest/download/just-swap.dmg"><strong>Download just-swap.dmg</strong></a><br>
   A menu bar app for Claude Code with several accounts<br>
-  macOS 26+, Apple Silicon
+  macOS 26+, Apple Silicon · signed and notarized
 </p>
 
 <p align="center">

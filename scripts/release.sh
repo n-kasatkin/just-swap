@@ -11,7 +11,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # The project's team; set TEAM_ID in the environment to use your own.
 TEAM_ID="${TEAM_ID:-3V43DGM2S6}"
-NOTARY_PROFILE=just-swap-notary
+NOTARY_PROFILE="${NOTARY_PROFILE:-just-swap-notary}"
 GH_OWNER=n-kasatkin
 GH_REPO=n-kasatkin/just-swap
 APP_NAME="just swap"

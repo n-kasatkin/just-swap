@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "activeAccountNumber": 1,
+  "accounts": [
+    {
+      "number": 1,
+      "email": "a1@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": true,
+      "usageStatus": "ok",
+      "usage": {
+        "fiveHour": {
+          "pct": 42.0,
+          "resetsAt": "2026-11-05T12:10:00+00:00",
+          "countdown": "2h 32m",
+          "clock": "14:10"
+        },
+        "sevenDay": {
+          "pct": 30.0,
+          "resetsAt": "2026-11-11T04:00:00+00:00",
+          "countdown": "5d 18h",
+          "clock": "Nov 11 06:00",
+          "expectedPct": 17.6,
+          "aheadOfPace": false,
+          "projectedExhaustionAt": "2026-11-08T06:44:28Z",
+          "willLastToReset": false
+        }
+      },
+      "alias": "main",
+      "plan": {
+        "label": "max_20x",
+        "tier": "max_20x",
+        "expired": false,
+        "fetchedAt": "2026-11-05T08:37:50Z"
+      },
+      "usageFetchedAt": "2026-11-05T09:37:20Z",
+      "usageAgeSeconds": 30.0,
+      "someFutureField": {
+        "nested": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "number": 2,
+      "email": "a2@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "ok",
+      "usage": {
+        "fiveHour": {
+          "pct": 100.0,
+          "resetsAt": "2026-11-05T13:00:00+00:00",
+          "countdown": "3h 22m",
+          "clock": "15:00"
+        },
+        "sevenDay": {
+          "pct": 55.0,
+          "resetsAt": "2026-11-10T04:00:00+00:00",
+          "countdown": "4d 18h",
+          "clock": "Nov 10 06:00",
+          "expectedPct": 31.9,
+          "aheadOfPace": true,
+          "projectedExhaustionAt": "2026-11-07T05:30:19Z",
+          "willLastToReset": false
+        },
+        "source": "headers",
+        "rejected": {
+          "retryAfterS": 1800,
+          "resetsAt": "2026-11-05T13:00:00+00:00"
+        }
+      },
+      "usageFetchedAt": "2026-11-05T09:37:40Z",
+      "usageAgeSeconds": 10.0,
+      "usageLastAttemptAt": "2026-11-05T09:30:12Z",
+      "usageNextPollAt": "2026-11-05T13:00:00Z"
+    },
+    {
+      "number": 3,
+      "email": "a3@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "unavailable",
+      "usage": null,
+      "lastGoodUsage": {
+        "fiveHour": {
+          "pct": 42.0,
+          "resetsAt": "2026-11-05T12:10:00+00:00",
+          "countdown": "2h 32m",
+          "clock": "14:10"
+        },
+        "sevenDay": {
+          "pct": 30.0,
+          "resetsAt": "2026-11-11T04:00:00+00:00",
+          "countdown": "5d 18h",
+          "clock": "Nov 11 06:00",
+          "expectedPct": 16.4,
+          "aheadOfPace": false,
+          "projectedExhaustionAt": "2026-11-08T00:06:08Z",
+          "willLastToReset": false
+        }
+      },
+      "lastGoodFetchedAt": "2026-11-05T07:37:50Z",
+      "lastGoodAgeSeconds": 7200.0,
+      "usageError": "http-429",
+      "usageRetryAt": "2026-11-05T09:47:50Z"
+    },
+    {
+      "number": 4,
+      "email": "a4@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "relogin_required",
+      "usage": null,
+      "disabled": true
+    },
+    {
+      "number": 5,
+      "email": "a5@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "ok",
+      "usage": {
+        "fiveHour": {
+          "pct": 42.0,
+          "resetsAt": "2026-11-05T12:10:00+00:00",
+          "countdown": "2h 32m",
+          "clock": "14:10"
+        },
+        "sevenDay": {
+          "pct": 30.0,
+          "resetsAt": "2026-11-11T04:00:00+00:00",
+          "countdown": "5d 18h",
+          "clock": "Nov 11 06:00",
+          "expectedPct": 17.6,
+          "aheadOfPace": false,
+          "projectedExhaustionAt": "2026-11-08T06:42:48Z",
+          "willLastToReset": false
+        }
+      },
+      "usageFetchedAt": "2026-11-05T09:36:50Z",
+      "usageAgeSeconds": 60.0,
+      "quarantine": {
+        "reason": "invalid_grant",
+        "at": "2026-11-05T08:00:00Z"
+      }
+    }
+  ],
+  "futureTopLevel": true
+}

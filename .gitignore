@@ -1,0 +1,17 @@
+# Local planning notes
+.docs/
+
+# macOS
+.DS_Store
+
+# Xcode / XcodeGen output
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+build/
+
+# Release output
+dist/
+
+# wt worktree notes
+.wt-note

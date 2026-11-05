@@ -1,0 +1,130 @@
+# XcodeGen spec of just swap. `xcodegen generate` writes JustSwap.xcodeproj (git-ignored);
+# scripts/build.sh runs it before building.
+name: JustSwap
+
+options:
+  bundleIdPrefix: dev.actionhook
+  deploymentTarget:
+    macOS: "26.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ARCHS: arm64
+    # The project's team; pass DEVELOPMENT_TEAM=<your team id> to xcodebuild to use your own.
+    DEVELOPMENT_TEAM: 3V43DGM2S6
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    DEAD_CODE_STRIPPING: YES
+
+targets:
+  JustSwap:
+    type: application
+    platform: macOS
+    sources:
+      - path: JustSwap
+        excludes: ["*.entitlements", "Info.plist"]
+      # Contents/Resources/LICENSE and THIRD_PARTY_NOTICES.md (scripts/notices.sh writes it).
+      - path: LICENSE
+        buildPhase: resources
+      - path: THIRD_PARTY_NOTICES.md
+        buildPhase: resources
+    dependencies:
+      - target: JustSwapCore
+    entitlements:
+      path: JustSwap/JustSwap.entitlements
+      properties: {}
+    # Merged with the generated Info.plist keys below.
+    info:
+      path: JustSwap/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UTExportedTypeDeclarations:
+          # A row dragged within the account list (UTType.justSwapAccount).
+          - UTTypeIdentifier: dev.actionhook.justswap.account
+            UTTypeDescription: just swap account row
+            UTTypeConformsTo: [public.data]
+    postBuildScripts:
+      # Runs before Xcode signs the app; the script also reseals it for no-op rebuilds.
+      - name: Embed Python core
+        script: '"${SRCROOT}/scripts/embed-python.sh"'
+        basedOnDependencyAnalysis: false
+        shell: /bin/bash
+    settings:
+      base:
+        PRODUCT_NAME: just swap
+        PRODUCT_MODULE_NAME: JustSwap
+        EXECUTABLE_NAME: just-swap
+        PRODUCT_BUNDLE_IDENTIFIER: dev.actionhook.justswap
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Manual
+        GENERATE_INFOPLIST_FILE: YES
+        COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_CFBundleDisplayName: just swap
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Nikita Kasatkin · MIT License"
+      configs:
+        # The .dev id keeps Debug's preferences and login item apart from Release's.
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: dev.actionhook.justswap.dev
+          CODE_SIGN_IDENTITY: "-"
+        Release:
+          CODE_SIGN_IDENTITY: Developer ID Application
+          OTHER_CODE_SIGN_FLAGS: "--timestamp"
+  JustSwapCore:
+    type: framework
+    platform: macOS
+    sources:
+      - JustSwapCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.actionhook.justswap.core
+        GENERATE_INFOPLIST_FILE: YES
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Manual
+        SKIP_INSTALL: YES
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: "-"
+        Release:
+          CODE_SIGN_IDENTITY: Developer ID Application
+          OTHER_CODE_SIGN_FLAGS: "--timestamp"
+  JustSwapTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: JustSwapTests
+        excludes:
+          - Fixtures
+      - path: JustSwapTests/Fixtures
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - target: JustSwapCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.actionhook.justswap.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "-"
+
+schemes:
+  JustSwap:
+    build:
+      targets:
+        JustSwap: all
+        JustSwapTests: [test]
+    test:
+      config: Debug
+      targets:
+        - JustSwapTests
+    run:
+      config: Debug
+    archive:
+      config: Release

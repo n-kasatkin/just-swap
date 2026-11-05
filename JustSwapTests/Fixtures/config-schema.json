@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "path": "/Users/x/.claude-swap-backup/settings.json",
+  "settings": [
+    {
+      "key": "autoswitch.threshold",
+      "value": 90.0,
+      "isSet": true,
+      "kind": "float",
+      "default": 90.0,
+      "min": 50.0,
+      "max": 99.9,
+      "help": "Switch when the 5h window (or any window, if no weekly line) reaches this pct"
+    },
+    {
+      "key": "autoswitch.weeklyThreshold",
+      "value": null,
+      "isSet": false,
+      "kind": "float",
+      "min": 50.0,
+      "max": 99.9,
+      "help": "Switch line for the 7d and per-model windows (unset: threshold)"
+    },
+    {
+      "key": "autoswitch.intervalSeconds",
+      "value": 60.0,
+      "isSet": false,
+      "kind": "float",
+      "default": 60.0,
+      "min": 15.0,
+      "max": 3600.0,
+      "help": "Poll interval for the cswap auto loop, in seconds"
+    },
+    {
+      "key": "autoswitch.cooldownSeconds",
+      "value": 300.0,
+      "isSet": false,
+      "kind": "float",
+      "default": 300.0,
+      "min": 0.0,
+      "max": 86400.0,
+      "help": "Minimum seconds between proactive switches"
+    },
+    {
+      "key": "autoswitch.hysteresisPct",
+      "value": 10.0,
+      "isSet": true,
+      "kind": "float",
+      "default": 10.0,
+      "min": 0.0,
+      "max": 50.0,
+      "help": "A target must beat the active account by this many pct of headroom"
+    },
+    {
+      "key": "autoswitch.strategy",
+      "value": "best",
+      "isSet": false,
+      "kind": "choice",
+      "default": "best",
+      "choices": [
+        "best",
+        "weekly-first",
+        "consume-first",
+        "priority-consume-first"
+      ],
+      "help": "How auto-switch picks the target account"
+    },
+    {
+      "key": "autoswitch.includeApiKeyAccounts",
+      "value": false,
+      "isSet": false,
+      "kind": "bool",
+      "default": false,
+      "help": "Allow rotating onto managed API-key accounts (bill per token)"
+    },
+    {
+      "key": "autoswitch.unhealthyTicks",
+      "value": 3,
+      "isSet": false,
+      "kind": "int",
+      "default": 3,
+      "min": 1,
+      "max": 100,
+      "help": "Consecutive failed polls before an account is unhealthy"
+    },
+    {
+      "key": "autoswitch.model",
+      "value": null,
+      "isSet": false,
+      "kind": "string",
+      "help": "Also switch on these models' weekly limits (e.g. Fable, Fable,Opus, or all)"
+    },
+    {
+      "key": "ui.theme",
+      "value": "light",
+      "isSet": true,
+      "kind": "choice",
+      "default": "auto",
+      "choices": [
+        "dark",
+        "light",
+        "auto"
+      ],
+      "help": "Color theme; auto follows the terminal background"
+    },
+    {
+      "key": "run.shareHistory",
+      "value": false,
+      "isSet": false,
+      "kind": "bool",
+      "default": false,
+      "help": "cswap run shares chat history unless --no-share-history"
+    },
+    {
+      "key": "updates.check",
+      "value": true,
+      "isSet": false,
+      "kind": "bool",
+      "default": true,
+      "help": "Check PyPI once a day and print a hint when a newer release exists"
+    },
+    {
+      "key": "usage.headerProbe",
+      "value": true,
+      "isSet": true,
+      "kind": "bool",
+      "default": true,
+      "help": "Read setup-token usage from a 1-token Haiku request's rate-limit headers (opt-in: uses quota)"
+    }
+  ]
+}

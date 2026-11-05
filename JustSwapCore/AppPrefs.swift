@@ -52,6 +52,10 @@ public enum AppPrefs {
     /// Shows the Log tab.
     public static let showLogTab = "showLogTab"
     public static let autoSwitchEnabled = "autoSwitchEnabled"
+    /// Popover body text in points; every font scales from it.
+    public static let textSize = "textSize"
+    public static let textSizes: ClosedRange<Double> = 11...16
+    public static let defaultTextSize: Double = 13
 
     public static let defaults: [String: Bool] = [autoSwitchEnabled: true, ignoreDisabled: false, showLogTab: false]
 

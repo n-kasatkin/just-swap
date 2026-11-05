@@ -5,23 +5,29 @@ import SwiftUI
 /// accent (the logo's core) with a darker ink for text, and semantic colours
 /// darkened to read on white. The app is light whatever the system appearance.
 enum Theme {
-    /// Every font is its design size in points, never below `minFont` so
-    /// secondary text stays readable.
+    /// Design sizes below are written for a 12 pt body; the user's text size
+    /// scales them all, never below `minFont` so secondary text stays readable.
+    static let designBody: CGFloat = 12
     static let minFont: CGFloat = 10
 
-    static func pointSize(_ size: CGFloat) -> CGFloat { max(minFont, size) }
+    @MainActor static var scale: CGFloat { TextSize.shared.points / designBody }
 
-    static func font(_ size: CGFloat, _ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
+    @MainActor static func pointSize(_ size: CGFloat) -> CGFloat { max(minFont, size * scale) }
+
+    /// A column sized for text (a label or a figure), so it grows with the type.
+    @MainActor static func scaled(_ length: CGFloat) -> CGFloat { ceil(length * scale) }
+
+    @MainActor static func font(_ size: CGFloat, _ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
         .system(size: pointSize(size), weight: weight, design: design)
     }
 
     /// Slot numbers, window labels, gauge readings and counters.
-    static func mono(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+    @MainActor static func mono(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
         font(size, weight, design: .monospaced)
     }
 
     /// Times and other figures inside text: tabular digits in the interface face.
-    static func figures(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+    @MainActor static func figures(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
         font(size, weight).monospacedDigit()
     }
 
@@ -32,8 +38,8 @@ enum Theme {
     static let radius: CGFloat = 12
     static let controlRadius: CGFloat = 6
     /// Columns of a usage row: the window label and the right-aligned percentage.
-    static let windowLabel: CGFloat = 16
-    static let windowValue: CGFloat = 32
+    @MainActor static var windowLabel: CGFloat { scaled(16) }
+    @MainActor static var windowValue: CGFloat { scaled(32) }
     /// The switch: about 1.3 times the cap height of the 13 pt-design type.
     static let switchSize = CGSize(width: 18, height: 10)
 
@@ -77,6 +83,22 @@ enum Theme {
     }
 
     static let quick = Animation.easeOut(duration: 0.15)
+}
+
+/// The user's text size setting, read by every `Theme` font so a change
+/// re-renders the popover at once.
+@MainActor @Observable
+final class TextSize {
+    static let shared = TextSize()
+
+    var points: Double {
+        didSet { UserDefaults.standard.set(points, forKey: AppPrefs.textSize) }
+    }
+
+    private init() {
+        let stored = UserDefaults.standard.object(forKey: AppPrefs.textSize) as? Double ?? AppPrefs.defaultTextSize
+        points = min(max(stored, AppPrefs.textSizes.lowerBound), AppPrefs.textSizes.upperBound)
+    }
 }
 
 extension Color {

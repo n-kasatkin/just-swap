@@ -239,18 +239,16 @@ struct MenuRow: View {
     }
 }
 
-/// One account: tile, name with freshness, then per window the label, a pace
-/// arrow tight against the percentage, and the reset countdown; the enabled
-/// switch last. A click opens the details and actions below the row.
+/// One account: tile, name and freshness on one line, then the two windows
+/// stacked, each the label, a pace arrow tight against the percentage, and the
+/// reset countdown; the enabled switch last. A click opens the details and
+/// actions below the row.
 struct AccountRowView: View {
     @Bindable var model: AppModel
     let row: AccountRow
     @Binding var expanded: Bool
     var onDragStart: () -> Void = {}
     @State private var hover = false
-
-    /// The name column; the rest of the row centres the usage block.
-    static let nameWidth: CGFloat = 64
 
     var body: some View {
         let s = SlotSummary(row: row)
@@ -259,28 +257,22 @@ struct AccountRowView: View {
             HStack(spacing: 6) {
                 HStack(spacing: 6) {
                     SlotTile(number: row.number, active: row.active, size: 20, surface: rowSurface)
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Text(model.shortName(row)).font(Theme.font(13, .medium)).lineLimit(1).truncationMode(.tail)
-                            if let glyph = s.glyph, !model.isProbing(row) {
-                                Image(systemName: glyph)
-                                    .font(Theme.font(11, .medium))
-                                    .foregroundStyle(Theme.tone(s.health.tone))
-                                    .help(status)
-                            }
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(model.shortName(row)).font(Theme.font(13, .medium)).lineLimit(1).truncationMode(.tail)
+                        if let glyph = s.glyph, !model.isProbing(row) {
+                            Image(systemName: glyph)
+                                .font(Theme.font(11, .medium))
+                                .foregroundStyle(Theme.tone(s.health.tone))
+                                .help(status)
                         }
-                        freshness(s)
+                        freshness(s).fixedSize()
                     }
-                    .frame(width: Self.nameWidth, alignment: .leading)
-                    // Equal spacers centre the usage block between the name and the switch.
                     Spacer(minLength: 0)
-                    HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         WindowCellView(label: "5h", cell: s.fiveHourWindow, line: model.fiveHourLine(row), dimmed: row.isStale)
-                        Text(" │ ").font(Theme.mono(WindowCellView.size)).foregroundStyle(Theme.muted.opacity(0.6)).fixedSize()
                         WindowCellView(label: "7d", cell: s.sevenDayWindow, line: model.sevenDayLine(row), dimmed: row.isStale)
                     }
                     .layoutPriority(1)
-                    Spacer(minLength: 0)
                 }
                 .opacity(row.isEnabled ? 1 : 0.5)
                 .contentShape(Rectangle())
@@ -352,15 +344,14 @@ struct WindowCellView: View {
     var line: Double
     var dimmed = false
 
-    /// The row's tightest text: two windows must fit beside the name and the switch.
-    static let size: CGFloat = 10
+    static let size: CGFloat = 11
 
     /// The cells' width from the mono face's advance, so trailing blanks count.
-    static let width: CGFloat = {
+    @MainActor static var width: CGFloat {
         let advance = ("0" as NSString).size(withAttributes: [
             .font: NSFont.monospacedSystemFont(ofSize: Theme.pointSize(size), weight: .regular)]).width
         return ceil(advance * CGFloat(SlotSummary.WindowCell.Cells.width))
-    }()
+    }
 
     var body: some View {
         let c = cell.cells(label: label)
@@ -629,7 +620,7 @@ struct FieldLine<Content: View>: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text(label).font(Theme.font(11)).foregroundStyle(Theme.secondary).frame(width: 52, alignment: .leading)
+            Text(label).font(Theme.font(11)).foregroundStyle(Theme.secondary).frame(width: Theme.scaled(52), alignment: .leading)
             content
             Spacer(minLength: 0)
         }

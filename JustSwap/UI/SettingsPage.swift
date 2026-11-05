@@ -16,6 +16,7 @@ struct SettingsPage: View {
     @AppStorage(MenuBarPrefs.customSeparator) private var customSeparator = ""
     @AppStorage(AppPrefs.ignoreDisabled) private var ignoreDisabled = false
     @AppStorage(AppPrefs.showLogTab) private var showLogTab = false
+    @Bindable private var textSize = TextSize.shared
     @State private var expanded: Set<String> = ["app", "menubar"]
 
     var body: some View {
@@ -32,6 +33,16 @@ struct SettingsPage: View {
                 }
                 ToggleCard(icon: "text.alignleft", title: "Show log tab", description: "The tail of claude-swap.log as a fourth tab") {
                     Toggle("", isOn: $showLogTab).systemSwitch()
+                }
+                ToggleCard(icon: "textformat.size", title: "Text size",
+                           description: "Body text in points; the rest scales with it") {
+                    HStack(spacing: 4) {
+                        Text("\(Int(textSize.points)) pt").font(Theme.figures(12, .medium)).fixedSize()
+                        Stepper("", value: $textSize.points, in: AppPrefs.textSizes, step: 1)
+                            .labelsHidden().controlSize(.small)
+                            .accessibilityLabel("Text size")
+                            .accessibilityValue("\(Int(textSize.points)) points")
+                    }
                 }
             }
 

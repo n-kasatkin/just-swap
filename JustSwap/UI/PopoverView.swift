@@ -47,7 +47,7 @@ struct PopoverView: View {
         ZStack {
             LogoMark(size: 28)
             HStack(spacing: 4) {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: -2) {
                     Text("Updated")
                         .font(Theme.font(11))
                         .foregroundStyle(Theme.muted)
@@ -105,8 +105,11 @@ struct PopoverView: View {
                     model.tab = t
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: t.icon).font(Theme.font(13))
-                        Text(t.title).font(Theme.font(12, .medium))
+                        // The tab is a fixed 24 pt tall and ~82 pt wide with four tabs: the type stops
+                        // growing at 14 pt and the icons give way to the titles.
+                        if !showLogTab { Image(systemName: t.icon).font(.system(size: min(Theme.pointSize(13), 14))) }
+                        Text(t.title).font(.system(size: min(Theme.pointSize(12), 14), weight: .medium))
+                            .lineLimit(1).minimumScaleFactor(0.7)
                     }
                     .foregroundStyle(selected ? Theme.accentInk : Theme.muted)
                     .frame(maxWidth: .infinity)

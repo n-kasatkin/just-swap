@@ -323,7 +323,10 @@ struct AccountRowView: View {
     /// The age of the last check; the spinner while this slot is being checked.
     @ViewBuilder private func freshness(_ s: SlotSummary) -> some View {
         if model.isProbing(row) || row.usageFetchInFlight == true {
+            // Centre the spinner on the age text's cap height instead of resting it on the baseline.
+            let lift = Theme.pointSize(11) * 0.36
             ProgressView().controlSize(.mini).scaleEffect(0.6).frame(width: 10, height: 11)
+                .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + lift }
                 .accessibilityLabel("Checking")
         } else if let f = SlotSummary.freshness(s.checkedAt) {
             Text(f)

@@ -97,7 +97,7 @@ final class TextSize {
 
     private init() {
         let stored = UserDefaults.standard.object(forKey: AppPrefs.textSize) as? Double ?? AppPrefs.defaultTextSize
-        points = min(max(stored, AppPrefs.textSizes.lowerBound), AppPrefs.textSizes.upperBound)
+        points = min(max(stored.rounded(), AppPrefs.textSizes.lowerBound), AppPrefs.textSizes.upperBound)
     }
 }
 

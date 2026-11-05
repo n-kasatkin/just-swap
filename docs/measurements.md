@@ -4,7 +4,7 @@ The numbers behind "light" in the README, measured by `scripts/measure.sh`.
 
 - Date: 2026-11-05
 - Machine: Apple Silicon Mac (arm64), macOS 26
-- Build: just swap 1.0.0, built by `scripts/build.sh` (Release, arm64, Developer ID), core claude-swap 0.30.0b1 (snapshot `23a6543b43`) on the bundled CPython.
+- Build: just swap 1.0.0, built by `scripts/build.sh` (Release, arm64, Developer ID), core claude-swap 0.30.0b1 (snapshot `6a9500eeed`) on the bundled CPython.
 - DMG: built like `scripts/release.sh` (UDZO, HFS+, the app and an Applications link), unsigned.
 
 ## Size

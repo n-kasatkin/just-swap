@@ -549,6 +549,10 @@ _probe_discovery: tuple[float, list[str]] | None = None
 _probe_last_model: str | None = None
 
 
+# Response header naming the organization the request's token belongs to.
+ORGANIZATION_ID_HEADER = "anthropic-organization-id"
+
+
 def _reset_probe_models() -> None:
     """Forget discovered and last-good probe models."""
     global _probe_discovery, _probe_last_model
@@ -606,7 +610,8 @@ def _probe_model_candidates(access_token: str) -> list[str]:
     return list(dict.fromkeys(chain))
 
 
-def _probe_once(access_token: str, model: str) -> dict:
+def _probe_once(access_token: str, model: str) -> tuple[dict, str | None]:
+    """One probe request: (parsed rate-limit headers, organization id header)."""
     # Standalone request: only these four fields, nothing from any Claude
     # Code session (no history, tools or metadata).
     body = json.dumps({
@@ -621,9 +626,13 @@ def _probe_once(access_token: str, model: str) -> dict:
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return parse_unified_ratelimit_headers(resp.headers)
+            return (
+                parse_unified_ratelimit_headers(resp.headers),
+                resp.headers.get(ORGANIZATION_ID_HEADER),
+            )
     except urllib.error.HTTPError as e:
         data = parse_unified_ratelimit_headers(e.headers) if e.headers else {}
+        org_id = e.headers.get(ORGANIZATION_ID_HEADER) if e.headers else None
         if e.code != 429 or "rejected" not in data:
             raise
         _kind, retry_after = _classify_usage_error(e)
@@ -634,7 +643,7 @@ def _probe_once(access_token: str, model: str) -> dict:
             ).isoformat()
         rejected["retry_after_s"] = retry_after
         data["rejected"] = rejected
-        return data
+        return data, org_id
 
 
 def request_usage_via_probe(access_token: str) -> dict:
@@ -660,11 +669,26 @@ def request_usage_via_probe(access_token: str) -> dict:
     network down) is not model-specific and raises at once. When every
     attempt fails, the last error is raised.
     """
+    return _probe(access_token)[0]
+
+
+def probe_organization_id(access_token: str) -> str | None:
+    """Organization id of a setup-token, from one usage probe request.
+
+    The ``anthropic-organization-id`` response header names the organization
+    the token belongs to; ``None`` when the response carries no such header.
+    Raises like :func:`request_usage_via_probe`.
+    """
+    return _probe(access_token)[1]
+
+
+def _probe(access_token: str) -> tuple[dict, str | None]:
+    """The model-fallback loop behind :func:`request_usage_via_probe`."""
     global _probe_last_model
     last_error: Exception | None = None
     for model in _probe_model_candidates(access_token)[:USAGE_PROBE_MAX_ATTEMPTS]:
         try:
-            data = _probe_once(access_token, model)
+            result = _probe_once(access_token, model)
         except urllib.error.HTTPError as e:
             if e.code not in (400, 404) and e.code < 500:
                 raise
@@ -677,7 +701,7 @@ def request_usage_via_probe(access_token: str) -> dict:
             last_error = e
         else:
             _probe_last_model = model
-            return data
+            return result
         _logger.debug("Usage header probe: model %s failed: %r", model, last_error)
     assert last_error is not None  # the static fallbacks keep the chain non-empty
     raise last_error

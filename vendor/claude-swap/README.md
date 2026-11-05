@@ -400,10 +400,15 @@ cswap add-token --email user@example.com     # optional label override
 ```
 
 `--email` is optional; omitted values use `setup-token-{slot}@token.local`
-(or `api-key-{slot}@token.local` for API keys). No Anthropic API calls are made.
+(or `api-key-{slot}@token.local` for API keys).
 `--slot N` on a slot that already holds the same email replaces only the
 credential: the alias, threshold, priority, disabled flag and the account's
 org/account identity stay. A different email replaces the whole account.
+When that slot has an organization, cswap first sends one 1-token usage probe
+with the new setup-token and reads its `anthropic-organization-id` response
+header: a different organization is refused with an error and nothing is
+written; a failed probe or a missing header keeps the slot's identity and
+prints a warning on stderr. No other add-token path calls the Anthropic API.
 
 **Setup-token usage.** The usage endpoint does not answer setup-tokens (their
 scope is inference-only), so cswap does not ask it. Instead cswap reads

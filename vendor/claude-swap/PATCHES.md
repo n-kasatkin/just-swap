@@ -6,7 +6,7 @@ A copy of [claude-swap](https://github.com/realiti4/claude-swap) by Onur Cetinko
 
 - Upstream base: [`e86b19b`](https://github.com/realiti4/claude-swap/commit/e86b19b9612295033dcc18085c64b346eda648a1)
   (`main`, 2026-11-03, "Merge pull request #541 from claycantrell/feat/weekly-first").
-- Snapshot: commit `23a6543` of the patched branch (full hash in [COMMIT](COMMIT)); the
+- Snapshot: commit `6a9500e` of the patched branch (full hash in [COMMIT](COMMIT)); the
   app shows its first characters in Settings.
 - Refreshed with `CORE_PATH=<claude-swap checkout> scripts/sync-core.sh`.
 
@@ -28,3 +28,4 @@ A copy of [claude-swap](https://github.com/realiti4/claude-swap) by Onur Cetinko
 | `fb62bfa` | list: the priority tier in the JSON rows when set |
 | `452381f` | `map --json` and `unclaimed --json` listings; `list --refresh-slot` probes one account |
 | `23a6543` | `add-token --slot N` with the slot's own email keeps its alias, threshold, priority, disabled flag and identity |
+| `6a9500e` | `add-token --slot N` with the same email checks the token's organization with one probe and refuses another organization's token |

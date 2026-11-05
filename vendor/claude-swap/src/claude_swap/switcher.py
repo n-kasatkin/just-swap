@@ -4154,6 +4154,41 @@ class ClaudeAccountSwitcher:
             print(f"{dimmed(f'Moved from slot {migrate_from} → {slot}')}")
         print(f"{accent('Added')} Account {account_num}: {current_email} {muted(f'[{tag}]')}")
 
+    def _check_replacement_token_org(
+        self, token: str, slot: int, kept_org: str
+    ) -> None:
+        """Refuse a same-email slot replace whose token is another organization's.
+
+        Setup-token slots carry placeholder emails, so the email alone cannot
+        tell a new token for the slot's account from another account's token.
+        One usage probe reads the token's ``anthropic-organization-id``; a
+        different org raises before anything is written. A failed probe or a
+        missing header keeps the slot's identity with a warning on stderr.
+        """
+        try:
+            token_org = oauth.probe_organization_id(token)
+        except Exception as e:
+            self._logger.debug("Token organization probe failed: %r", e)
+            warning(
+                f"Could not verify the token's organization ({type(e).__name__}); "
+                f"keeping slot {slot}'s identity",
+                file=sys.stderr,
+            )
+            return
+        if not token_org:
+            warning(
+                "Token response carried no organization id; "
+                f"keeping slot {slot}'s identity",
+                file=sys.stderr,
+            )
+            return
+        if token_org.strip().lower() != kept_org.strip().lower():
+            raise ValidationError(
+                f"Token belongs to organization {token_org}, slot {slot} is "
+                f"organization {kept_org}; use add-token without --slot or "
+                "remove the slot first"
+            )
+
     def add_account_from_token(
         self,
         token: str,
@@ -4169,7 +4204,9 @@ class ClaudeAccountSwitcher:
         family (``sk-ant-api03-…``, ``sk-ant-usr-…``, …) is a managed API key
         (stored raw, activated on Claude Code's API-key auth axis); an OAuth-prefixed
         ``sk-ant-oat…`` token — or anything else — is treated as an OAuth
-        setup-token. No Anthropic API calls are made.
+        setup-token. No Anthropic API calls are made, except one usage probe
+        when ``slot`` holds the same email with an organization: the token's
+        organization must match it (see :meth:`_check_replacement_token_org`).
 
         Args:
             token: Raw OAuth setup-token or ``sk-ant-…`` API key, or ``"-"`` to read
@@ -4292,6 +4329,10 @@ class ClaudeAccountSwitcher:
                         for key in _TOKEN_REPLACE_KEPT_FIELDS
                         if key in existing
                     }
+                    if kept.get("organizationUuid") and not is_api_key:
+                        self._check_replacement_token_org(
+                            token, slot, kept["organizationUuid"]
+                        )
                 if not is_same:
                     existing_tag = self._get_display_tag(
                         existing_email,

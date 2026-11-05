@@ -547,7 +547,7 @@ struct AccountActions: View {
 
     private var replaceTokenForm: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Paste a setup-token (claude setup-token) or an API key for this account. Its name, switch line, priority, rotation state and identity stay.")
+            Text("Paste a setup-token (claude setup-token) or an API key for this account. Its name, switch line, priority, rotation state and identity stay; a token from another organization is refused.")
                 .font(Theme.font(11)).foregroundStyle(Theme.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Text("Use a token of this same account: a token for a different email is a different account, so add that one with Add token instead.")

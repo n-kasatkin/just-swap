@@ -5,13 +5,14 @@ import SwiftUI
 /// accent (the logo's core) with a darker ink for text, and semantic colours
 /// darkened to read on white. The app is light whatever the system appearance.
 enum Theme {
-    /// One knob for text size: every font is a design size times this,
-    /// never below `minFont` so secondary text stays readable.
-    static let fontScale: CGFloat = 0.75
-    static let minFont: CGFloat = 9
+    /// Every font is its design size in points, never below `minFont` so
+    /// secondary text stays readable.
+    static let minFont: CGFloat = 10
+
+    static func pointSize(_ size: CGFloat) -> CGFloat { max(minFont, size) }
 
     static func font(_ size: CGFloat, _ weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
-        .system(size: max(minFont, size * fontScale), weight: weight, design: design)
+        .system(size: pointSize(size), weight: weight, design: design)
     }
 
     /// Slot numbers, window labels, gauge readings and counters.

@@ -273,14 +273,14 @@ struct AccountRowView: View {
                     }
                     .frame(width: Self.nameWidth, alignment: .leading)
                     // Equal spacers centre the usage block between the name and the switch.
-                    Spacer(minLength: 8)
+                    Spacer(minLength: 0)
                     HStack(spacing: 0) {
                         WindowCellView(label: "5h", cell: s.fiveHourWindow, line: model.fiveHourLine(row), dimmed: row.isStale)
-                        Text("  │  ").font(Theme.mono(12)).foregroundStyle(Theme.muted.opacity(0.6)).fixedSize()
+                        Text(" │ ").font(Theme.mono(WindowCellView.size)).foregroundStyle(Theme.muted.opacity(0.6)).fixedSize()
                         WindowCellView(label: "7d", cell: s.sevenDayWindow, line: model.sevenDayLine(row), dimmed: row.isStale)
                     }
                     .layoutPriority(1)
-                    Spacer(minLength: 8)
+                    Spacer(minLength: 0)
                 }
                 .opacity(row.isEnabled ? 1 : 0.5)
                 .contentShape(Rectangle())
@@ -352,10 +352,13 @@ struct WindowCellView: View {
     var line: Double
     var dimmed = false
 
+    /// The row's tightest text: two windows must fit beside the name and the switch.
+    static let size: CGFloat = 10
+
     /// The cells' width from the mono face's advance, so trailing blanks count.
     static let width: CGFloat = {
-        let size = max(Theme.minFont, 12 * Theme.fontScale)
-        let advance = ("0" as NSString).size(withAttributes: [.font: NSFont.monospacedSystemFont(ofSize: size, weight: .regular)]).width
+        let advance = ("0" as NSString).size(withAttributes: [
+            .font: NSFont.monospacedSystemFont(ofSize: Theme.pointSize(size), weight: .regular)]).width
         return ceil(advance * CGFloat(SlotSummary.WindowCell.Cells.width))
     }()
 
@@ -367,11 +370,11 @@ struct WindowCellView: View {
         arrow.foregroundColor = Theme.warn
         var pct = AttributedString(c.percent)
         pct.foregroundColor = pctColor(cell.pct ?? 0).opacity(dimmed ? 0.6 : 1)
-        pct.font = Theme.mono(12, .medium)
+        pct.font = Theme.mono(Self.size, .medium)
         var tail = AttributedString(" " + c.countdown)
         tail.foregroundColor = Theme.muted
         return Text(head + arrow + pct + tail)
-            .font(Theme.mono(12))
+            .font(Theme.mono(Self.size))
             .lineLimit(1)
             .fixedSize()
             .frame(width: Self.width, alignment: .leading)
